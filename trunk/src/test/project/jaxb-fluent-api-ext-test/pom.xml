@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>redmosquito</groupId>
-	<artifactId>jaxb-fluent-api-test</artifactId>
+	<artifactId>jaxb-fluent-api-ext-test</artifactId>
 	<packaging>jar</packaging>
 	<version>0.0.1</version>
-	<name>jaxb-fluent-api-test</name>
+	<name>jaxb-fluent-api-ext-test</name>
 	<url>http://code.google.com/p/jaxb-fluent-api-ext/</url>
 	<build>
 		<plugins>
