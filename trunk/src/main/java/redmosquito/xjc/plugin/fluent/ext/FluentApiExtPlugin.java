@@ -25,11 +25,11 @@ public class FluentApiExtPlugin extends Plugin {
 	private String methodPrefix = "with";
 
 	public String getOptionName() {
-		return "Xwalk-api";
+		return "Xfluent-api-ext";
 	}
 
 	public String getUsage() {
-		return " TODO";
+		return " Fluent API Extension";
 	}
 
 	public boolean run(Outline outline, Options options,

@@ -34,12 +34,12 @@
 						<include>ship-order.xsd</include>
 					</schemaIncludes>
 					<args>
-						<arg>-Xwalk-api</arg>
+						<arg>-Xfluent-api-ext</arg>
 					</args>
 					<plugins>
 						<plugin>
-							<groupId>jaya</groupId>
-							<artifactId>path-creator-fluent-api</artifactId>
+							<groupId>redmosquito</groupId>
+							<artifactId>jaxb-fluent-api-ext</artifactId>
 							<version>0.0.1</version>
 						</plugin>
 					</plugins>
