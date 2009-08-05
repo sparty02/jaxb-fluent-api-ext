@@ -6,6 +6,26 @@
   <version>0.0.1</version>
   <name>jaxb-fluent-api-ext</name>
   <url>http://code.google.com/p/jaxb-fluent-api-ext/</url>
+  <issueManagement>
+    <url>http://code.google.com/p/jaxb-fluent-api-ext/issues/list</url>
+  </issueManagement>
+  <inceptionYear>2009</inceptionYear>
+  <developers>
+    <developer>
+      <id>jerome.delagnes</id>
+      <name>Jerome Delagnes</name>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License</name>
+      <url>http://www.gnu.org/licenses/lgpl.html</url>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:svn:http://jaxb-fluent-api-ext.googlecode.com/svn/trunk</connection>
+    <url>http://jaxb-fluent-api-ext.googlecode.com/svn/trunk</url>
+  </scm>
   <build>
     <plugins>
       <plugin>
