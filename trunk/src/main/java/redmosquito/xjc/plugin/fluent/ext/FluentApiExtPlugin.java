@@ -1,8 +1,12 @@
 package redmosquito.xjc.plugin.fluent.ext;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
+import com.sun.codemodel.ClassType;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JConditional;
@@ -11,7 +15,6 @@ import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JForLoop;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
-import com.sun.codemodel.JPackage;
 import com.sun.codemodel.JPrimitiveType;
 import com.sun.codemodel.JVar;
 import com.sun.tools.xjc.Options;
@@ -20,7 +23,11 @@ import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
 import com.sun.tools.xjc.outline.Outline;
 
-public class FluentApiExtPlugin extends Plugin {
+public final class FluentApiExtPlugin extends Plugin {
+
+	private static enum FieldType {
+		ELEMENT, LIST, OTHER
+	}
 
 	private String methodPrefix = "with";
 
@@ -40,8 +47,8 @@ public class FluentApiExtPlugin extends Plugin {
 				case ELEMENT:
 					createElementMethod(fieldOutline);
 					break;
-				case COLLECTION:
-					createCollectionMethod(fieldOutline);
+				case LIST:
+					createListMethod(fieldOutline);
 					break;
 				case OTHER:
 				default:
@@ -50,6 +57,42 @@ public class FluentApiExtPlugin extends Plugin {
 			}
 		}
 		return false;
+	}
+
+	private FieldType getFieldType(FieldOutline fieldOutline) {
+		JClass jClass = fieldOutline.getRawType().boxify();
+		return isManagedClass(jClass) ? FieldType.ELEMENT
+				: isManagedList(jClass) ? FieldType.LIST : FieldType.OTHER;
+	}
+
+	private boolean isManagedClass(JClass jClass) {
+		if (jClass instanceof JDefinedClass) {
+			JDefinedClass definedClass = (JDefinedClass) jClass;
+			if (definedClass.getClassType() == ClassType.CLASS) {
+				@SuppressWarnings("unchecked")
+				Iterator<JMethod> constructors = definedClass.constructors();
+				if (constructors.hasNext() == false) {
+					return true;
+				}
+				while (constructors.hasNext()) {
+					JMethod constructor = constructors.next();
+					if (constructor.listParams().length == 0) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isList(JClass jClass) {
+		return jClass.getBaseClass(List.class) != null;
+	}
+
+	private boolean isManagedList(JClass jClass) {
+		return isList(jClass)
+				&& isManagedClass(jClass.getBaseClass(List.class)
+						.getTypeParameters().get(0));
 	}
 
 	protected void createElementMethod(FieldOutline fieldOutline) {
@@ -71,7 +114,7 @@ public class FluentApiExtPlugin extends Plugin {
 		body._return(JExpr.ref(fieldName));
 	}
 
-	protected void createCollectionMethod(FieldOutline fieldOutline) {
+	protected void createListMethod(FieldOutline fieldOutline) {
 		final JDefinedClass implClass = fieldOutline.parent().implClass;
 		final String propertyName = fieldOutline.getPropertyInfo()
 				.getName(true);
@@ -105,25 +148,5 @@ public class FluentApiExtPlugin extends Plugin {
 		_ifElementIsNullThen.invoke(list, "set").arg(index).arg(element);
 
 		body._return(element);
-	}
-
-	protected FieldType getFieldType(FieldOutline fieldOutline) {
-		return isElement(fieldOutline) ? FieldType.ELEMENT
-				: isCollection(fieldOutline) ? FieldType.COLLECTION
-						: FieldType.OTHER;
-	}
-
-	protected boolean isElement(FieldOutline fieldOutline) {
-		JPackage classPackage = fieldOutline.parent()._package()._package();
-		JPackage fieldPackage = fieldOutline.getRawType().boxify()._package();
-		return classPackage.equals(fieldPackage);
-	}
-
-	protected boolean isCollection(FieldOutline fieldOutline) {
-		return fieldOutline.getPropertyInfo().isCollection();
-	}
-
-	private static enum FieldType {
-		ELEMENT, COLLECTION, OTHER
 	}
 }
