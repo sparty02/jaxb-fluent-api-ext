@@ -1,7 +1,5 @@
-#summary Maven configuration.
-#labels Phase-Deploy,Phase-Implementation
-
-= Maven configuration sample =
+#summary Maven configuration sample.
+#labels Phase-Deploy,Phase-Implementation,Maven
 
 {{{
 <project 
