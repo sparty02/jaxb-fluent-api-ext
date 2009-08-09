@@ -26,7 +26,7 @@ dependencies.getDependency().add(dependency);
 project.setDependencies(dependencies);
 }}}
 Code is not really fluent, isn't it?<br>
-The use of `ObjectFactory` and setters to create path elements are really boring me.
+The use of `ObjectFactory` and setters to create path are really boring me.
 
 With the XJC Fluent API Plugin code looks nicer.
 {{{
