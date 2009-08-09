@@ -122,4 +122,4 @@ void addFooBarDependency(Project project) {
 }
 }}}
 
-Notice that `withDependencies` method creates and set a new instance of `Dependencies` if and only if the current dependencies property is not set. If the dependencies property is set the method returns the current dependencies object.
+Notice that `withDependencies` method creates and set a new instance of `Dependencies` if and only if the current dependencies property is not set.
