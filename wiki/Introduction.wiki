@@ -1,0 +1,125 @@
+#summary Introduction and Motivation
+
+When I work with an JAXB object graph, I always frustrated.<br>
+I expect more fluent and user friendly member access API than JAXB provides me.<br>
+I will try to illustrate what I am talking about in a simple example.<br>
+
+In the following I want to create a new maven project descriptor with JAXB generated objects.
+{{{
+Project project = factory.createProject();
+
+project.setmodelVersion("4.0.0");
+project.setGroupId("redmosquito")
+project.artifactId("jaxb-fluent-api-ext")
+project.setPackaging("jar")
+project.setVersion("0.0.1")
+project.setName("JAXB FLuent API Extensions");
+
+Dependency dependency = factory.createDependency();
+dependency.setGroupId("org.jvnet.jaxb2_commons");
+dependency.setArtifactId("jaxb-xjc");
+dependency.setVersion("2.1.10");
+
+Dependencies dependencies = factory.createDependencies();
+dependencies.getDependency().add(dependency);
+
+project.setDependencies(dependencies);
+}}}
+Code is not really fluent, isn't it?<br>
+The use of `ObjectFactory` and setters to create path elements are really boring me.
+
+With the XJC Fluent API Plugin code looks nicer.
+{{{
+Project project = factory.createProject()
+  .withModelVersion("4.0.0");
+  .withGroupId("redmosquito")
+  .withArtifactId("jaxb-fluent-api-ext")
+  .withPackaging("jar")
+  .withVersion("0.0.1")
+  .withName("JAXB FLuent API Extensions");
+  .withDependencies(
+    factory.createDependencies()
+      .withDependency(
+        factory.createDependency()
+          .withGroupId("org.jvnet.jaxb2_commons")
+          .withArtifactId("jaxb-xjc")
+          .withVersion("2.1.10")
+      )
+  );
+}}}
+Code is more fluent... but not enough yet :o)
+{{{
+Project project = factory.createProject()
+  .withModelVersion("4.0.0");
+  .withGroupId("redmosquito")
+  .withArtifactId("jaxb-fluent-api-ext")
+  .withPackaging("jar")
+  .withVersion("0.0.1")
+  .withName("JAXB FLuent API Extensions");
+
+project
+  .withDependencies() 
+    .withNewDependency()
+      .withGroupId("org.jvnet.jaxb2_commons");
+      .withArtifactId("jaxb-xjc");
+      .withVersion("2.1.10");
+}}}
+With the two new methods `withDependencies` and `withNewDependency` the job sounds quite simple and fluent.
+  * `withDependencies` creates and sets a new dependencies object to the project object.
+  * `withNewDependency` creates and adds a new dependency object to the dependency list of the dependencies object.
+
+This is what the XJC Fluent API Extensions generates for you.
+
+Now imaging in an other part of code, you have to add new dependency to the project.
+Locally you don't know if any dependencies are already registered.
+
+Without the plugin...
+{{{
+void addFooBarDependency(Project project) {
+  Dependencies = project.getDependencies();
+
+  if (dependencies != null) {
+    dependencies = factory.createDependencies();
+    project.setDependencies(dependencies);
+  }
+
+  Dependency dependency = factory.createDependency();
+  dependency.setGroupId("foo");
+  dependency.setArtifactId("bar");
+  dependency.setVersion("2.1.10");
+
+  dependencies.getDependency().add(dependency);
+}
+}}}
+With XJC Fluent API Plugin the code becomes
+{{{
+void addFooBarDependency(Project project) {
+  Dependencies = project.getDependencies();
+
+  if (dependencies != null) {
+    dependencies = factory.createDependencies();
+    project.setDependencies(dependencies);
+  }
+
+  dependencies
+    .withDependency(
+      factory.createDependency()
+        .withGroupId("foo")
+        .withArtifactId("bar")
+        .withVersion("1.2.3")
+    );
+}
+}}}
+And with the XJC Fluent API Extensions we have
+{{{
+void addFooBarDependency(Project project) {
+  project
+    .withDependencies() 
+      .withNewDependency()
+        .withGroupId("foo")
+        .withArtifactId("bar")
+        .withVersion("1.2.3");
+}
+}}}
+
+Notice that `withDependencies` method creates and set a new instance of `Dependencies` if and only if the current dependencies property is not set. If the dependencies property is set the method returns the current dependencies object.
