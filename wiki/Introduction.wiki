@@ -73,7 +73,7 @@ This is what the XJC Fluent API Extensions generates for you.
 Now imaging in an other part of code, you have to add new dependency to the project.
 Locally you don't know if any dependencies are already registered.
 
-Without the plugin...
+With no-plugin...
 {{{
 void addFooBarDependency(Project project) {
   Dependencies = project.getDependencies();
@@ -91,7 +91,7 @@ void addFooBarDependency(Project project) {
   dependencies.getDependency().add(dependency);
 }
 }}}
-With XJC Fluent API Plugin the code becomes
+With XJC Fluent API Plugin, the code becomes:
 {{{
 void addFooBarDependency(Project project) {
   Dependencies = project.getDependencies();
@@ -110,7 +110,7 @@ void addFooBarDependency(Project project) {
     );
 }
 }}}
-And with the XJC Fluent API Extensions we have
+And with the XJC Fluent API Extensions...
 {{{
 void addFooBarDependency(Project project) {
   project
