@@ -23,20 +23,29 @@ import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.FieldOutline;
 import com.sun.tools.xjc.outline.Outline;
 
+/**
+ * XJC Fluent API Extensions Plugin.
+ * @author Jérôme Delagnes
+ */
 public final class FluentApiExtPlugin extends Plugin {
 
-   private static enum FieldType {
-      ELEMENT, LIST, OTHER
-   }
-
+   /**
+    * {@inheritDoc}
+    */
    public String getOptionName() {
       return "Xfluent-api-ext";
    }
 
+   /**
+    * {@inheritDoc}
+    */
    public String getUsage() {
-      return " Fluent API Extension";
+      return " Fluent API Extensions";
    }
 
+   /**
+    * {@inheritDoc}
+    */
    public boolean run(Outline outline, Options options, ErrorHandler errorHandler) throws SAXException {
       for (ClassOutline classOutline : outline.getClasses()) {
          for (FieldOutline fieldOutline : classOutline.getDeclaredFields()) {
@@ -57,15 +66,47 @@ public final class FluentApiExtPlugin extends Plugin {
       return false;
    }
 
+   /** Field type. */
+   private static enum FieldType {
+      /** JAXB generated class. */
+      ELEMENT,
+      /** List of JAXB generated class. */
+      LIST,
+      /** Other */
+      OTHER
+   }
+
+   /**
+    * Analyzes the field and returns:
+    * <ul>
+    * <li>{@link FieldType#ELEMENT} if the field is a managed class (see
+    * {@link #isManagedClass(JClass)}.
+    * <li>{@link FieldType#LIST} if the field is a managed list (see
+    * {@link #isManagedList(JClass)}.
+    * <li>{@link FieldType#OTHER} else.
+    * </ul>
+    * @param fieldOutline - the field.
+    * @return the type of the field.
+    */
    private FieldType getFieldType(FieldOutline fieldOutline) {
       JClass jClass = fieldOutline.getRawType().boxify();
       return isManagedClass(jClass) ? FieldType.ELEMENT : isManagedList(jClass) ? FieldType.LIST : FieldType.OTHER;
    }
 
+   /**
+    * The {@link JClass} object is managed if:
+    * <ul>
+    * <li>it is a JAXB generated class.
+    * <li>it has a constructor with no argument or no constructor.
+    * </ul>
+    * @param jClass - the {@link JClass} object.
+    * @return true if the class is managed.
+    */
    private boolean isManagedClass(JClass jClass) {
       if (jClass instanceof JDefinedClass) {
          JDefinedClass definedClass = (JDefinedClass) jClass;
-         if (definedClass.getClassType() == ClassType.CLASS) {
+         if (definedClass.getClassType() == ClassType.CLASS && !definedClass.isAbstract()) {
+            // TODO Check the class is not private ?
             @SuppressWarnings("unchecked")
             Iterator<JMethod> constructors = definedClass.constructors();
             if (constructors.hasNext() == false) {
@@ -74,6 +115,7 @@ public final class FluentApiExtPlugin extends Plugin {
             while (constructors.hasNext()) {
                JMethod constructor = constructors.next();
                if (constructor.listParams().length == 0) {
+                  // TODO Check the constructor is not private ?
                   return true;
                }
             }
@@ -82,14 +124,54 @@ public final class FluentApiExtPlugin extends Plugin {
       return false;
    }
 
+   /**
+    * The {@link JClass} object is a list if:
+    * <ul>
+    * <li>the class is a {@link List}.
+    * <li>the class implements {@link List}.
+    * </ul>
+    * @param jClass - the {@link JClass} to anayze.
+    * @return true if the {@link JClass} object is or extends {@link List}.
+    */
    private boolean isList(JClass jClass) {
+      // XXX Not recursive implementation. Only check base class.
       return jClass.getBaseClass(List.class) != null;
    }
 
+   /**
+    * The {@link JClass} object is a managed list if:
+    * <ul>
+    * <li>the class is a list (see {@link #isList(JClass)}).
+    * <li>the parameter type is a managed class (see
+    * {@link #isManagedClass(JClass)}.
+    * </ul>
+    * @param jClass - the class object.
+    * @return true if it is a managed list.
+    */
    private boolean isManagedList(JClass jClass) {
       return isList(jClass) && isManagedClass(jClass.getBaseClass(List.class).getTypeParameters().get(0));
    }
 
+   /**
+    * <p>
+    * Generates the <code>with&lt;property&gt;()</code> method. The generated
+    * body method looks like:
+    * 
+    * <pre>
+    * //...
+    * PropertyClass property;
+    * 
+    * //...
+    * public PropertyClass withProperty() {
+    *    if (this.property == null) {
+    *       this.property = new PropertyClass();
+    *    }
+    *    return this.property;
+    * }
+    * //...
+    * </pre>
+    * @param fieldOutline - the field outline.
+    */
    protected void createWithMethod(FieldOutline fieldOutline) {
       final JDefinedClass implClass = fieldOutline.parent().implClass;
       final String fieldName = fieldOutline.getPropertyInfo().getName(false);
@@ -106,6 +188,34 @@ public final class FluentApiExtPlugin extends Plugin {
       body._return(JExpr.ref(fieldName));
    }
 
+   /**
+    * <p>
+    * Generates the <code>with&lt;property&gt;(int i)</code> method. The
+    * generated body method looks like:
+    * 
+    * <pre>
+    * //...
+    * PropertyClass property;
+    * 
+    * //...
+    * public PropertyClass withItem(int index) {
+    *    List&lt;PropertyClass&gt; list = this.getItem();
+    *    if (list.size() &lt;= index) {
+    *       for (int i = list.size(); (i &lt;= index); i++) {
+    *          list.add(null);
+    *       }
+    *    }
+    *    PropertyClass value = list.get(index);
+    *    if (value == null) {
+    *       value = new PropertyClass();
+    *       list.set(index, value);
+    *    }
+    *    return value;
+    * }
+    * //...
+    * </pre>
+    * @param fieldOutline
+    */
    protected void createListWithMethod(FieldOutline fieldOutline) {
       final JDefinedClass implClass = fieldOutline.parent().implClass;
       final String propertyName = fieldOutline.getPropertyInfo().getName(true);
@@ -135,6 +245,25 @@ public final class FluentApiExtPlugin extends Plugin {
       body._return(element);
    }
 
+   /**
+    * <p>
+    * Generates the <code>withNew&lt;property&gt;()</code> method. The generated
+    * body method looks like:
+    * 
+    * <pre>
+    * //...
+    * PropertyClass property;
+    * 
+    * //...
+    * public PropertyClass withNewItem() {
+    *    PropertyClass value = new PropertyClass();
+    *    this.getItem().add(value);
+    *    return value;
+    * }
+    * //...
+    * </pre>
+    * @param fieldOutline
+    */
    protected void createListWithNewMethod(FieldOutline fieldOutline) {
       final JDefinedClass implClass = fieldOutline.parent().implClass;
       final String propertyName = fieldOutline.getPropertyInfo().getName(true);
