@@ -66,10 +66,10 @@ public final class FluentApiExtPlugin extends Plugin {
       for (ClassOutline classOutline : outline.getClasses()) {
          for (FieldOutline fieldOutline : classOutline.getDeclaredFields()) {
             switch (getFieldType(fieldOutline)) {
-               case ELEMENT:
+               case MANAGED_FIELD:
                   createWithMethod(fieldOutline);
                   break;
-               case LIST:
+               case MANAGED_LIST:
                   createListWithMethod(fieldOutline);
                   createListWithNewMethod(fieldOutline);
                   break;
@@ -85,9 +85,9 @@ public final class FluentApiExtPlugin extends Plugin {
    /** Field type. */
    private static enum FieldType {
       /** JAXB generated class. */
-      ELEMENT,
+      MANAGED_FIELD,
       /** List of JAXB generated class. */
-      LIST,
+      MANAGED_LIST,
       /** Other */
       OTHER
    }
@@ -95,9 +95,9 @@ public final class FluentApiExtPlugin extends Plugin {
    /**
     * Analyzes the field and returns:
     * <ul>
-    * <li>{@link FieldType#ELEMENT} if the field is a managed class (see
+    * <li>{@link FieldType#MANAGED_FIELD} if the field is a managed class (see
     * {@link #isManagedClass(JClass)}.
-    * <li>{@link FieldType#LIST} if the field is a managed list (see
+    * <li>{@link FieldType#MANAGED_LIST} if the field is a managed list (see
     * {@link #isManagedList(JClass)}.
     * <li>{@link FieldType#OTHER} else.
     * </ul>
@@ -106,7 +106,8 @@ public final class FluentApiExtPlugin extends Plugin {
     */
    private FieldType getFieldType(FieldOutline fieldOutline) {
       JClass jClass = fieldOutline.getRawType().boxify();
-      return isManagedClass(jClass) ? FieldType.ELEMENT : isManagedList(jClass) ? FieldType.LIST : FieldType.OTHER;
+      return isManagedClass(jClass) ? FieldType.MANAGED_FIELD : isManagedList(jClass) ? FieldType.MANAGED_LIST
+         : FieldType.OTHER;
    }
 
    /**
@@ -121,7 +122,7 @@ public final class FluentApiExtPlugin extends Plugin {
    private boolean isManagedClass(JClass jClass) {
       if (jClass instanceof JDefinedClass) {
          JDefinedClass definedClass = (JDefinedClass) jClass;
-         if (definedClass.getClassType() == ClassType.CLASS && !definedClass.isAbstract()) {
+         if (ClassType.CLASS.equals(definedClass.getClassType()) && !definedClass.isAbstract()) {
             // TODO Check the class is not private ?
             @SuppressWarnings("unchecked")
             Iterator<JMethod> constructors = definedClass.constructors();
