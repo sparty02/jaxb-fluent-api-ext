@@ -40,8 +40,9 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:svn:http://jaxb-fluent-api-ext.googlecode.com/svn/code/tags/0.0.2</connection>
-    <url>http://jaxb-fluent-api-ext.googlecode.com/svn/code/tags/0.0.2</url>
+    <connection>scm:svn:http://jaxb-fluent-api-ext.googlecode.com/svn/code</connection>
+    <url>http://jaxb-fluent-api-ext.googlecode.com/svn/code</url>
+    <developerConnection>scm:svn:https://jaxb-fluent-api-ext.googlecode.com/svn/code</developerConnection>
   </scm>
   <build>
     <plugins>
