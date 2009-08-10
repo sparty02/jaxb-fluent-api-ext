@@ -20,7 +20,7 @@
   <groupId>redmosquito</groupId>
   <artifactId>jaxb-fluent-api-ext</artifactId>
   <packaging>jar</packaging>
-  <version>0.0.2</version>
+  <version>0.0.2-SNAPSHOT</version>
   <name>jaxb-fluent-api-ext</name>
   <url>http://code.google.com/p/jaxb-fluent-api-ext/</url>
   <issueManagement>
