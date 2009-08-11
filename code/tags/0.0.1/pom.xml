@@ -120,12 +120,12 @@
     <repository>
       <id>jaxb-fluent-api-ext-release</id>
       <name>jaxb-fluent-api-ext-release</name>
-      <url>scm:svn:https://jaxb-fluent-api-ext.googlecode.com/svn/maven/release</url>
+      <url>svn:https://jaxb-fluent-api-ext.googlecode.com/svn/maven/release</url>
     </repository>
     <snapshotRepository>
       <id>jaxb-fluent-api-ext-snapshot</id>
       <name>jaxb-fluent-api-ext-snapshot</name>
-      <url>scm:svn:https://jaxb-fluent-api-ext.googlecode.com/svn/maven/snapshot</url>
+      <url>svn:https://jaxb-fluent-api-ext.googlecode.com/svn/maven/snapshot</url>
     </snapshotRepository>
   </distributionManagement>
 </project>
