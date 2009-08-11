@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>redmosquito</groupId>
+  <artifactId>jaxb-fluent-api-ext</artifactId>
+  <version>0.0.2</version>
+  <versioning>
+    <versions>
+      <version>0.0.2</version>
+    </versions>
+    <lastUpdated>20090811002231</lastUpdated>
+  </versioning>
+</metadata>
