@@ -1,0 +1,3 @@
+<bindings xmlns="http://java.sun.com/xml/ns/jaxb" version="2.0">
+	<globalBindings collectionType="java.util.Vector" />
+</bindings>
