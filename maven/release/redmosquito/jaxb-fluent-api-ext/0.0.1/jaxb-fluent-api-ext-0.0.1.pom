@@ -1,3 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>redmosquito</groupId>
@@ -18,18 +35,18 @@
   </developers>
   <licenses>
     <license>
-      <name>GNU Lesser General Public License</name>
-      <url>http://www.gnu.org/licenses/lgpl.html</url>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
     </license>
   </licenses>
   <scm>
-    <connection>scm:svn:http://jaxb-fluent-api-ext.googlecode.com/svn/trunk</connection>
-    <url>http://jaxb-fluent-api-ext.googlecode.com/svn/trunk</url>
+    <connection>scm:svn:http://jaxb-fluent-api-ext.googlecode.com/svn/code/tags/0.0.1</connection>
+    <url>http://jaxb-fluent-api-ext.googlecode.com/svn/code/tags/0.0.1</url>
+    <developerConnection>scm:svn:https://jaxb-fluent-api-ext.googlecode.com/svn/code/tags/0.0.1</developerConnection>
   </scm>
   <build>
     <plugins>
       <plugin>
-        <inherited>true</inherited>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
@@ -38,14 +55,12 @@
         </configuration>
       </plugin>
       <plugin>
-        <inherited>true</inherited>
         <artifactId>maven-install-plugin</artifactId>
         <configuration>
           <createChecksum>true</createChecksum>
         </configuration>
       </plugin>
       <plugin>
-        <inherited>true</inherited>
         <artifactId>maven-source-plugin</artifactId>
         <executions>
           <execution>
@@ -55,17 +70,32 @@
               <goal>jar</goal>
               <goal>test-jar</goal>
             </goals>
-            <inherited>true</inherited>
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>bin</descriptorRef>
+            <descriptorRef>project</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>
     </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.jvnet.wagon-svn</groupId>
+        <artifactId>wagon-svn</artifactId>
+        <version>1.8</version>
+      </extension>
+    </extensions>
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.jvnet.jaxb2.maven2</groupId>
-      <artifactId>maven-jaxb2-plugin</artifactId>
-      <version>0.7.1</version>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-xjc</artifactId>
+      <version>2.1.12</version>
     </dependency>
   </dependencies>
   <repositories>
@@ -93,4 +123,16 @@
       <layout>legacy</layout>
     </pluginRepository>
   </pluginRepositories>
+  <distributionManagement>
+    <repository>
+      <id>jaxb-fluent-api-ext-release</id>
+      <name>jaxb-fluent-api-ext-release</name>
+      <url>svn:https://jaxb-fluent-api-ext.googlecode.com/svn/maven/release</url>
+    </repository>
+    <snapshotRepository>
+      <id>jaxb-fluent-api-ext-snapshot</id>
+      <name>jaxb-fluent-api-ext-snapshot</name>
+      <url>svn:https://jaxb-fluent-api-ext.googlecode.com/svn/maven/snapshot</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
