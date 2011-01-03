@@ -10,7 +10,7 @@ Project project = factory.createProject();
 
 project.setmodelVersion("4.0.0");
 project.setGroupId("redmosquito")
-project.artifactId("jaxb-fluent-api-ext")
+project.setArtifactId("jaxb-fluent-api-ext")
 project.setPackaging("jar")
 project.setVersion("0.0.1")
 project.setName("JAXB FLuent API Extensions");
@@ -76,7 +76,7 @@ Locally you don't know if any dependencies are already registered.
 With no plugin...
 {{{
 void addFooBarDependency(Project project) {
-  Dependencies = project.getDependencies();
+  Dependencies dependencies = project.getDependencies();
 
   if (dependencies != null) {
     dependencies = factory.createDependencies();
