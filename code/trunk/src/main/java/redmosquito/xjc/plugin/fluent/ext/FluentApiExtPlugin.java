@@ -124,7 +124,6 @@ public final class FluentApiExtPlugin extends Plugin {
          JDefinedClass definedClass = (JDefinedClass) jClass;
          if (ClassType.CLASS.equals(definedClass.getClassType()) && !definedClass.isAbstract()) {
             // TODO Check the class is not private ?
-            @SuppressWarnings("unchecked")
             Iterator<JMethod> constructors = definedClass.constructors();
             if (constructors.hasNext() == false) {
                return true;
