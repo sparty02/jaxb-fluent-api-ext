@@ -41,6 +41,7 @@ import com.sun.tools.xjc.outline.Outline;
 
 /**
  * XJC Fluent API Extensions Plugin.
+ * 
  * @author Jérôme Delagnes
  */
 public final class FluentApiExtPlugin extends Plugin {
